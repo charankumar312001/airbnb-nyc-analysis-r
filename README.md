@@ -33,6 +33,9 @@ This data analysis project explores Airbnb listings across New York City using t
 - Geographic and categorical analysis
 - Clear documentation and report structuring in RMarkdown
 
+  ## video presention
+  https://cmich.webex.com/webappng/sites/cmich/recording/b9a75d24998d103dbeff2e508b8c55bb/playback
+
 ---
 
 ## 👤 Author
