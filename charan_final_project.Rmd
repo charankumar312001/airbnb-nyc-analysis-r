@@ -1,0 +1,228 @@
+---
+title: "Final Project"
+output: charan kumar chaganabaoina
+date: "2024-11-27"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# Loading necessary libraries
+library(dplyr)
+library(ggplot2)
+```
+
+```{r}
+# Loading data
+airbnb_data <- read.csv("C:/Users/saich/Documents/New folder charan/AB_NYC_2019.csv")
+
+# 1. Checking missing values
+colSums(is.na(airbnb_data))
+```
+
+```{r}
+# 2. Handling missing values
+airbnb_data$reviews_per_month[is.na(airbnb_data$reviews_per_month)] <- 0
+```
+
+```{r}
+colSums(is.na(airbnb_data))
+```
+```{r}
+# Checking the structure of the dataset to see data types of each column
+str(airbnb_data)
+
+```
+
+```{r}
+
+# 3. Converting 'last_review' to Date
+airbnb_data$last_review <- as.Date(airbnb_data$last_review)
+```
+
+```{r}
+head(airbnb_data)
+```
+
+```{r}
+# 1. Summary of key columns
+summary(airbnb_data$price)  # Summary statistics for price
+summary(airbnb_data$number_of_reviews)  # Summary for number of reviews
+```
+
+```{r}
+#Mean, Median, Standard Deviation of Price
+mean_price <- mean(airbnb_data$price, na.rm = TRUE)  # Mean
+median_price <- median(airbnb_data$price, na.rm = TRUE)  # Median
+sd_price <- sd(airbnb_data$price, na.rm = TRUE)  # Standard Deviation
+
+#Mean, Median, Standard Deviation of Number of Reviews
+mean_reviews <- mean(airbnb_data$number_of_reviews, na.rm = TRUE)  # Mean
+median_reviews <- median(airbnb_data$number_of_reviews, na.rm = TRUE)  # Median
+sd_reviews <- sd(airbnb_data$number_of_reviews, na.rm = TRUE)  # Standard Deviation
+
+# Printing the results
+cat("Price Summary:\n")
+cat("Mean:", mean_price, "Median:", median_price, "SD:", sd_price, "\n")
+
+cat("Number of Reviews Summary:\n")
+cat("Mean:", mean_reviews, "Median:", median_reviews, "SD:", sd_reviews, "\n")
+```
+```{r}
+# Creating the box plot
+ggplot(airbnb_data, aes(x = neighbourhood_group, y = price, fill = neighbourhood_group)) +
+  geom_boxplot(outlier.colour = "red", outlier.size = 2) +  # Highlight outliers
+  scale_y_continuous(limits = c(0, 500)) +  # Set price limit for better visualization
+  labs(
+    title = "Price Variation Across Neighbourhood Groups",
+    x = "Neighbourhood Group",
+    y = "Price"
+  ) +
+  theme_minimal()
+
+```
+###The box plot shows how Airbnb prices differ in various parts of New York City. Manhattan stands out with the highest average prices and the widest range of prices. In contrast, Bronx, Queens, and Staten Island tend to have lower and more consistent prices. All areas, however, have some listings that are much more expensive than usual, which are shown as outliers on the plot.
+
+```{r}
+# Bar plot for room type distribution
+ggplot(airbnb_data, aes(x = neighbourhood_group, fill = room_type)) +
+  geom_bar(position = "dodge") +
+  labs(
+    title = "Distribution of Room Types by Neighbourhood Group",
+    x = "Neighbourhood Group",
+    y = "Count",
+    fill = "Room Type"
+  ) +
+  theme_minimal()
+
+```
+##This bar chart shows the different types of Airbnb rooms available in each neighbourhood group. Manhattan and Brooklyn have the highest number of listings, especially for entire homes/apartments and private rooms. Shared rooms are the least common across all neighbourhoods.
+
+```{r}
+# Map of listings
+ggplot(airbnb_data, aes(x = longitude, y = latitude, color = neighbourhood_group)) +
+  geom_point(alpha = 0.5, size = 0.7) +  # Add scatter points with some transparency
+  labs(
+    title = "Map of Airbnb Listings in NYC",
+    x = "Longitude",
+    y = "Latitude",
+    color = "Neighbourhood Group"
+  ) +
+  theme_minimal()
+
+```
+##This map shows where Airbnb listings are located in New York City. Each dot represents a listing, and the colors show different neighborhoods. Most listings are in Manhattan, Brooklyn, and Queens, while fewer are in the Bronx and Staten Island.
+
+```{r}
+# Calculating revenue potential
+airbnb_data$revenue_potential <- airbnb_data$price * airbnb_data$availability_365
+
+# View the first few rows to check the new column
+head(airbnb_data)
+
+```
+```{r}
+# Summary statistics for revenue potential
+summary(airbnb_data$revenue_potential)
+
+```
+```{r}
+# Boxplot for Revenue Potential by Neighbourhood Group
+ggplot(airbnb_data, aes(x = neighbourhood_group, y = revenue_potential, fill = neighbourhood_group)) +
+  geom_boxplot(outlier.colour = "red", outlier.size = 2) +
+  scale_y_continuous(limits = c(0, 500000)) +  # Adjust limits for better visualization
+  labs(
+    title = "Revenue Potential by Neighbourhood Group",
+    x = "Neighbourhood Group",
+    y = "Revenue Potential"
+  ) +
+  theme_minimal()
+
+```
+##This box plot shows the revenue potential of Airbnb listings in different New York City neighborhoods. Manhattan and Brooklyn have the highest potential earnings, while the Bronx, Queens, and Staten Island show lower earnings. There are some listings in all neighborhoods with very high revenue potential, shown as outliers.
+
+
+```{r}
+# Calculating average revenue potential by room type
+avg_revenue_by_room <- aggregate(revenue_potential ~ room_type, airbnb_data, mean)
+
+
+barplot(
+  avg_revenue_by_room$revenue_potential,
+  names.arg = avg_revenue_by_room$room_type,
+  col = "lightblue",
+  main = "Average Revenue Potential by Room Type",
+  xlab = "Room Type",
+  ylab = "Average Revenue Potential"
+)
+
+
+```
+##This bar chart shows the average revenue potential for different types of Airbnb rooms. Entire homes or apartments have the highest average revenue potential. Private rooms and shared rooms earn significantly less compared to entire homes or apartments.
+
+```{r}
+# Calculating total revenue potential by neighbourhood group
+total_revenue_by_neighbourhood <- aggregate(revenue_potential ~ neighbourhood_group, airbnb_data, sum)
+
+barplot(
+  total_revenue_by_neighbourhood$revenue_potential,
+  names.arg = total_revenue_by_neighbourhood$neighbourhood_group,
+  col = "lightgreen",
+  main = "Total Revenue Potential by Neighbourhood Group",
+  xlab = "Neighbourhood Group",
+  ylab = "Total Revenue Potential"
+)
+
+
+```
+##This bar chart shows the total revenue potential for Airbnb listings in different New York City neighborhoods. Manhattan has the highest total revenue potential, followed by Brooklyn. Queens, the Bronx, and Staten Island have much lower total revenue potential in comparison.
+
+
+Linear Regression to Predict Price
+
+```{r}
+
+model <- lm(price ~ number_of_reviews + availability_365 + minimum_nights, data = airbnb_data)
+
+summary(model)
+
+```
+
+Check Model Performance
+```{r}
+# View the coefficients and R-squared value
+print(summary(model)$coefficients)
+print(paste("R-squared:", summary(model)$r.squared))
+
+```
+##The R-squared value (0.011) means the model explains only 1% of the changes in price, so the model is not very accurate.
+
+##The coefficients show that more reviews slightly decrease the price, while more availability slightly increases the price.
+
+
+
+ Making Predictions
+```{r}
+
+airbnb_data$predicted_price <- predict(model, airbnb_data)
+
+head(airbnb_data[c("price", "predicted_price")])
+
+```
+ 
+ Plot Actual vs Predicted Prices
+```{r}
+plot(airbnb_data$price, airbnb_data$predicted_price,
+     main = "Actual vs Predicted Prices",
+     xlab = "Actual Price",
+     ylab = "Predicted Price",
+     col = "blue",
+     pch = 16)
+
+abline(0, 1, col = "red", lwd = 2)
+
+```
+##This scatter plot compares the actual prices of Airbnb listings to the predicted prices from the model. The blue dots represent individual listings, and the red line shows the ideal case where predicted prices match actual prices perfectly. Most of the predicted prices are far from the red line, which means the model does not predict the actual prices very accurately.
+ 
